@@ -37,6 +37,9 @@ module.exports = {
             image: filename,
         });
 
+        //Websocket
+        req.io.emit('post', post);
+
         //Retorno
         res.json(post);
     }
