@@ -11,22 +11,17 @@ module.exports = {
     },
 
     async store(req, res) {
-        //obtem variáveis
         const { author, place, description, hashtags } = req.body;
         const { filename: image } = req.file;
-
-        //Obter a extensão jpge
-        const [name] = image.split('.');
-        const filename = `${name}.jpg`;
+        const filename = obtemExtJpeg(image);
 
         //Redimensiona a imagem
         await sharp(req.file.path)
-            .resize(500)
-            .jpeg({quality: 70})
-            .toFile(path.resolve(req.file.destination, 'resized', filename));
+        .resize(500)
+        .jpeg({quality: 70})
+        .toFile(path.resolve(req.file.destination, 'resized', filename));
 
-        //Apagar imagem original
-        fs.unlinkSync(req.file.path);
+        apagaImagemOriginal(req);
 
         //Posta no banco de dados
         const post = await Post.create({
@@ -43,4 +38,33 @@ module.exports = {
         //Retorno
         res.json(post);
     }
+}
+
+/**
+ * Obtem extensão jpge
+ * @param {*} image 
+ */
+function obtemExtJpeg(image) {
+    const [name] = image.split('.');
+    const filename = `${name}.jpg`;
+    return filename;
+}
+
+/**
+ * Redimensiona a imagem
+ * @param {*} req 
+ * @param {*} filename 
+ * @param {*} success
+ * @todo Descobrir como fazer funcionar o redimencionamento com await 
+ */
+async function redimensionaImagem(req, filename, success) {
+    
+}
+
+/**
+ * Apaga imagem original
+ * @param {*} req 
+ */
+function apagaImagemOriginal(req) {
+    fs.unlinkSync(req.file.path);
 }
